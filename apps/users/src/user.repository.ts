@@ -15,9 +15,8 @@ export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
     ){
         super(userModel)
     }
-
     
-  async findByUserId(userId: string): Promise<UserProfileEntity | null> {
+  async findByUserId(userId: string): Promise<UserProfile | null> {
     const profile = await this.userModel.findOne({ where: { userId } })
     return profile ? this.mapEntityToInterface(profile) : null
   }
@@ -42,7 +41,7 @@ export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
 
 
 
-   private mapEntityToInterface(entity: UserProfile): UserProfileEntity {
+   private mapEntityToInterface(entity: UserProfile): UserProfile {
     return {
       userId: entity.userId,
       email: entity.email,

@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator'
 
-export class CreateUserDto {
+export class CreateProfileDto {
     @IsString()
     firstName: string
 
@@ -11,5 +11,5 @@ export class CreateUserDto {
     email: string
 
     @IsString()
-    password: string
+    userId: string
 }

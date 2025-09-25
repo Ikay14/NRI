@@ -21,15 +21,22 @@ export class AuthController {
 
   @Post('login')
   async login(
-        @Body() login: LoginDto
+    @Body() login: LoginDto
   ){
     return await this.authService.login(login)
   }
 
-  @Post('refresh')
+  @Post('verify')
   async validateToken(
     @Body('token') token: string
   ){
     return await this.authService.validateUser(token)
+  }
+
+  @Post('refresh')
+  async refreshToken(
+    @Body()  userId: string, refreshToken: string 
+  ){
+    return this.authService.refreshToken(userId, refreshToken)
   }
 }

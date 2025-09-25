@@ -12,6 +12,6 @@ export interface UserProfileEntity extends BaseEntity {
   location?: string;
   preferences?: Record<string, any>;
   socialMedia?: Record<string, string>;
-  fullName: string;
+  fullName?: string;
 
 }
