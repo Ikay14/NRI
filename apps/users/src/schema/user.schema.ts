@@ -3,24 +3,50 @@ import { Document } from "mongoose";
 import { BaseEntity } from "@app/common";
 
 
-@Schema({ timestamps: true, versionKey: false })
-export class User extends BaseEntity {          
+@Schema({ timestamps: true })
+export class UserProfile extends BaseEntity {
+        @Prop({ unique: true })
+        userId: string; // Reference to AUTH-SERVICE user ID
 
-  @Prop()
-  firstName: string;
+        @Prop({ unique: true })
+        email: string; // Duplicated for queries
 
-  @Prop()
-  lastName: string;
+        @Prop()
+        firstName: string;
 
-  @Prop({ required: true })
-  email: string;
+        @Prop()
+        lastName: string;
 
-  @Prop()
-  password: string;
+        @Prop({ })
+        phoneNumber: string;
 
-  @Prop()
-  location?: string;   // fixed typo
+        @Prop({ })
+        avatar: string;
+
+        @Prop({ })
+        dateOfBirth: Date;
+
+        @Prop({ })
+        bio: string;
+
+        @Prop({ nullable: true })
+        location: string;
+
+        @Prop({ })
+        preferences: Record<string, any>;
+
+        @Prop({  })
+        socialMedia: Record<string, string>;
+
+        @Prop()
+        createdAt: Date;
+
+        @Prop()
+        updatedAt: Date;
+
+        get fullName(): string {
+          return `${this.firstName} ${this.lastName}`.trim();
+  }
 }
 
-
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = SchemaFactory.createForClass(UserProfile)

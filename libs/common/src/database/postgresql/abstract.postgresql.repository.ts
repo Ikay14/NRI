@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Repository, FindOptionsWhere, DeepPartial } from 'typeorm';
+import { Repository, FindOptionsWhere, DeepPartial, SaveOptions } from 'typeorm';
 import { BaseEntity } from '@app/common/interface/base-entity.interface';
 import { IBaseRepository } from '@app/common/interface/repository.interface';
 
@@ -10,15 +10,17 @@ export abstract class AbstractPostgresRepository<TEntity extends BaseEntity>
   
   constructor(protected readonly repository: Repository<any>) {}
  
-  async create(document: Omit<TEntity, 'id'>): Promise<TEntity> {
+  async create(document: Partial<TEntity>,
+    options?: SaveOptions
+  ): Promise<TEntity> {
     const entity = this.repository.create({
       ...document,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
     
-    const saved = await this.repository.save(entity);
-    return this.mapEntityToInterface(saved);
+    return (await entity.save(options))
+    .toJSON() as unknown as TEntity;
   }
 
   async findOne(filter: FindOptionsWhere<any>): Promise<TEntity | null> {

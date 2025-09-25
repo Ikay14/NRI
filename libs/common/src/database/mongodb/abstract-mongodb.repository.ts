@@ -11,12 +11,11 @@ export abstract class AbstractMongoRepository<TDocument extends BaseEntity>
   
   constructor(protected readonly model: Model<any>) {}
 
-  async create(document: Omit<TDocument, 'id'>, 
+  async create(document: Partial<TDocument>, 
     options?: SaveOptions,
   ): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
-      _id: new Types.ObjectId(),
       createdAt: new Date(),
       updatedAt: new Date(),
     });

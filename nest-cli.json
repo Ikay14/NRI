@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/nri/src",
+  "sourceRoot": "apps/api/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/nri/tsconfig.app.json"
+    "tsConfigPath": "apps/api/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/nri",
+  "root": "apps/api",
   "projects": {
     "admin": {
       "type": "application",
@@ -46,13 +46,13 @@
         "tsConfigPath": "apps/courier/tsconfig.app.json"
       }
     },
-    "nri": {
+    "api": {
       "type": "application",
-      "root": "apps/nri",
+      "root": "apps/api",
       "entryFile": "main",
-      "sourceRoot": "apps/nri/src",
+      "sourceRoot": "apps/api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nri/tsconfig.app.json"
+        "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     },
     "order": {
