@@ -2,10 +2,11 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { AuthRepository } from './auth.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { HttpService } from 'https-service'
+import { HttpService } from '@nestjs/axios'
 import { AuthEntity } from './interface/auth-entity.interface';
 import { jwtPayload } from './interface/jwtPayload.interface';
 import { LoginDto } from './dto/login-dto';
+import { timeStamp } from 'console';
 
 
 @Injectable()
@@ -120,6 +121,12 @@ async refreshToken(id: string, refreshToken: string): Promise<{ accessToken: str
     })
 
     return tokens
+}
+
+async validateOtp(email:string, otp:string){
+  const isValidOtp = await this.authRepository.validateOtp(email, otp)
+  if(!isValidOtp) throw new BadRequestException('Invalid OTP')
+  return { msg: 'Email verified successfully' }
 }
 
 

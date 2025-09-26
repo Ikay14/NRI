@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { NriModule } from '../src/nri.module';
+import { NriModule } from '../src/api.module';
 
 describe('NriController (e2e)', () => {
   let app: INestApplication;

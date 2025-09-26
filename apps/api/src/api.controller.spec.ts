@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NriController } from './nri.controller';
-import { NriService } from './nri.service';
+import { NriController } from './api.controller';
+import { NriService } from './api.service';
 
 describe('NriController', () => {
   let nriController: NriController;

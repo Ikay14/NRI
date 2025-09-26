@@ -1,12 +1,12 @@
 import { AbstractMongoRepository } from "@app/common";
-import { Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UserProfileEntity } from "./interface/user-profile.interface";
 import { UserProfile } from "./schema/user.schema";
 import { PublicUserEntity } from "./interface/user-public.interface";
 
-
+@Injectable()
 export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
     protected readonly logger = new Logger(UserRepository.name)
     
@@ -26,15 +26,16 @@ export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
     return profile ? this.mapToPublicInterface(profile) : null
   }
 
-  async searchProfiles(searchTerm: string): Promise<PublicUserEntity[]> {
+  async searchProfiles(searchTerm: string, page: number): Promise<PublicUserEntity[]> {
     const regex = new RegExp(searchTerm, 'i')
     const profiles = await this.userModel.find({
       $or: [
         { firstName: regex },
         { lastName: regex },
-        { location: regex }
+        { location: regex }  
       ]
     }).limit(20)
+    .skip((page - 1) * 20)
 
     return profiles.map(profile => this.mapToPublicInterface(profile))
   }

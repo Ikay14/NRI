@@ -40,6 +40,26 @@ export class AuthRepository extends AbstractPostgresRepository<AuthUser>{
     const hashedToken = refreshToken ? await bcrypt.hash(refreshToken, 12) : null;
     await this.repository.update(id, { refreshToken: hashedToken });
   }
+  
+
+  async validateOtp(email: string, otp: string): Promise<boolean>{
+    const user = await this.repository.findOne({
+      where: { email } })
+    if(!user) return false;
+
+    if(!user.emailVerificationToken ||  user.emailVerificationExpires > Date.now())
+    return false;
+
+    const isValidOtp = await bcrypt.compare(otp, user.emailVerificationToken);
+    if(!isValidOtp) return false;
+
+    await this.repository.update(email, {
+    emailVerificationExpires: null,
+    emailVerificationToken: null,
+    isEmailVerified: true,
+  });
+    return true
+  }
 
   async validateRefreshToken(id: string, refreshToken: string): Promise<boolean> {
     const user = await this.repository.findOne({

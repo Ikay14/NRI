@@ -5,7 +5,13 @@ import { AuthUser } from './schema/auth.schema';
 import { PostgresDatabaseModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Joi from 'joi';
+import  * as Joi from 'joi';
+import { AuthRepository } from './auth.repository';
+import { JwtService } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
+
+
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,9 +22,10 @@ import Joi from 'joi';
       envFilePath: './apps/auth/.env',
     }),
     PostgresDatabaseModule,
-    TypeOrmModule.forFeature([AuthUser])
+    TypeOrmModule.forFeature([AuthUser]),
+    HttpModule
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, AuthRepository, JwtService],
 })
 export class AuthModule {}

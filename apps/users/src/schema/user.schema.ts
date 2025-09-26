@@ -29,13 +29,13 @@ export class UserProfile extends BaseEntity {
         @Prop({ })
         bio: string;
 
-        @Prop({ nullable: true })
+        @Prop({ })
         location: string;
 
-        @Prop({ })
-        preferences: Record<string, any>;
+        @Prop({ type: Object, default: {} })
+        preferences: Record<string, any>
 
-        @Prop({  })
+        @Prop({ type: Object })
         socialMedia: Record<string, string>;
 
         @Prop()
