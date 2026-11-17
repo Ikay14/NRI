@@ -14,7 +14,8 @@ import { UserRepository } from './user.repository';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        MONGO_URI: Joi.string().required() 
+        MONGO_URI: Joi.string().required(),
+        INTERNAL_SERVICE_TOKEN: Joi.string().required(),
       }),
       envFilePath: 'apps/users/.env'
     }),
