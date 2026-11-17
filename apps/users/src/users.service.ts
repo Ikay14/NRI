@@ -23,8 +23,8 @@ export class UsersService {
     return await this.userRepository.findByUserId(userId)
   }
 
-  async getPublicProfile(userId: string):Promise<UserProfileEntity>{
-    return await this.getPublicProfile(userId)
+  async getPublicProfile(userId: string): Promise<PublicUserEntity | null> {
+    return await this.userRepository.findPublicProfile(userId);
   }
 
   async searchUsers(searchTerm: string, page: number): Promise<PublicUserEntity[]> {

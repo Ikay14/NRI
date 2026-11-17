@@ -17,17 +17,19 @@ export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
     }
     
   async findByUserId(userId: string): Promise<UserProfile | null> {
-    const profile = await this.userModel.findOne({ where: { userId } })
+    const profile = await this.userModel.findOne({ userId })
     return profile ? this.mapEntityToInterface(profile) : null
   }
 
   async findPublicProfile(userId: string): Promise<PublicUserEntity | null> {
-    const profile = await this.userModel.findOne({ where: { userId } })
+    const profile = await this.userModel.findOne({ userId })
     return profile ? this.mapToPublicInterface(profile) : null
   }
 
   async searchProfiles(searchTerm: string, page: number): Promise<PublicUserEntity[]> {
-    const regex = new RegExp(searchTerm, 'i')
+    const escaped = (searchTerm ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safePage = Math.max(1, Number(page) || 1);
+    const regex = new RegExp(escaped, 'i')
     const profiles = await this.userModel.find({
       $or: [
         { firstName: regex },
@@ -35,7 +37,7 @@ export class UserRepository extends AbstractMongoRepository<UserProfileEntity> {
         { location: regex }  
       ]
     }).limit(20)
-    .skip((page - 1) * 20)
+    .skip((safePage - 1) * 20)
 
     return profiles.map(profile => this.mapToPublicInterface(profile))
   }
