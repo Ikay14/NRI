@@ -66,7 +66,7 @@ export class AuthController {
       path: '/'
     })
 
-    return { user, accessToken, refreshToken }
+    return { user };
   }
 
   @Post('verify')
@@ -86,7 +86,8 @@ export class AuthController {
   
   @Post('refresh')
   async refreshToken(
-    @Body()  userId: string, refreshToken: string 
+    @Body('userId') userId: string,
+    @Body('refreshToken') refreshToken: string
   ){
     return this.authService.refreshToken(userId, refreshToken)
   }

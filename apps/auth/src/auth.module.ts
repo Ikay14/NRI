@@ -18,6 +18,13 @@ import { HttpModule } from '@nestjs/axios';
       isGlobal: true,
       validationSchema: Joi.object({
         POSTGRES_URI: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
+        JWT_EXPIRES_IN: Joi.string().default('1d'),
+        JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+        INTERNAL_SERVICE_TOKEN: Joi.string().required(),
+        USER_SERVICE_URL: Joi.string().uri().required(),
+        COOKIE_SECRET: Joi.string().required(),
       }),
       envFilePath: './apps/auth/.env',
     }),

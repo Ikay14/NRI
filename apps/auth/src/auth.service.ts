@@ -6,7 +6,7 @@ import { HttpService } from '@nestjs/axios'
 import { AuthEntity } from './interface/auth-entity.interface';
 import { jwtPayload } from './interface/jwtPayload.interface';
 import { LoginDto } from './dto/login-dto';
-import { timeStamp } from 'console';
+import { firstValueFrom } from 'rxjs';
 
 
 @Injectable()
@@ -42,11 +42,14 @@ export class AuthService {
   }
 
   const user = await this.authRepository.create(authData)
+  if (!user.id) {
+    throw new InternalServerErrorException('User ID is missing');
+  }
 
   const token = await this.generateTokens({
     sub: user.id,
-    email: user.id,
-    role: user.role
+    email: user.email,
+    role: user.role ?? 'user'
   })
 
   await this.authRepository.setRefreshToken(user.id, token.refreshToken)
@@ -108,17 +111,22 @@ async refreshToken(id: string, refreshToken: string): Promise<{ accessToken: str
       secret: process.env.JWT_REFRESH_SECRET,
     })
 
-    const user = await this.authRepository.validateRefreshToken(id, refreshToken)
-    if (!user) {
+    if (payload.sub !== id) {
+      throw new UnauthorizedException('Refresh token subject mismatch');
+    }
+
+    const isValid = await this.authRepository.validateRefreshToken(id, refreshToken)
+    if (!isValid) {
       throw new UnauthorizedException('Refresh token not valid')
     }
 
-
     const tokens = await this.generateTokens({
-      sub: payload.id,
+      sub: payload.sub,
       email: payload.email,
       role: payload.role,
     })
+
+    await this.authRepository.setRefreshToken(payload.sub, tokens.refreshToken)
 
     return tokens
 }
@@ -148,15 +156,17 @@ async validateUser(token: string): Promise<AuthEntity | null> {
     lastName: string;
   }): Promise<void> {
     try {
-      await this.httpService.post(
-        `${process.env.USER_SERVICE_URL}/api/users/profiles`,
-        profileData,
-        {
-          headers: {
-            'X-Service-Token': process.env.INTERNAL_SERVICE_TOKEN
+      await firstValueFrom(
+        this.httpService.post(
+          `${process.env.USER_SERVICE_URL}/users/create-profile`,
+          profileData,
+          {
+            headers: {
+              'X-Service-Token': process.env.INTERNAL_SERVICE_TOKEN
+            }
           }
-        }
-      ).toPromise();
+        ),
+      );
     } catch (error) {
       this.logger.error('Failed to create user profile', error);
       throw new InternalServerErrorException('Failed to create user profile');

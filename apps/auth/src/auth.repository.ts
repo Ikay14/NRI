@@ -29,7 +29,7 @@ export class AuthRepository extends AbstractPostgresRepository<AuthUser>{
       select: ['id', 'password', 'isActive']
     });
 
-    if (!user || !user.isActive || user.isLocked) {
+    if (!user || !user.isActive) {
       return false;
     }
 
@@ -47,18 +47,26 @@ export class AuthRepository extends AbstractPostgresRepository<AuthUser>{
       where: { email } })
     if(!user) return false;
 
-    if(!user.emailVerificationToken ||  user.emailVerificationExpires > Date.now())
-    return false;
+    if (
+      !user.emailVerificationToken ||
+      !user.emailVerificationExpires ||
+      user.emailVerificationExpires.getTime() < Date.now()
+    ) {
+      return false;
+    }
 
     const isValidOtp = await bcrypt.compare(otp, user.emailVerificationToken);
-    if(!isValidOtp) return false;
+    if (!isValidOtp) return false;
 
-    await this.repository.update(email, {
-    emailVerificationExpires: null,
-    emailVerificationToken: null,
-    isEmailVerified: true,
-  });
-    return true
+    await this.repository.update(
+      { email },
+      {
+        emailVerificationExpires: null,
+        emailVerificationToken: null,
+        isEmailVerified: true,
+      },
+    );
+    return true;
   }
 
   async validateRefreshToken(id: string, refreshToken: string): Promise<boolean> {
@@ -71,8 +79,9 @@ export class AuthRepository extends AbstractPostgresRepository<AuthUser>{
     return await bcrypt.compare(refreshToken, user.refreshToken);
   }
 
-    protected mapAuthEntityToInterface(entity: AuthUser): AuthEntity {  
+    protected mapAuthEntityToInterface(entity: AuthUser): AuthEntity {
     return {
+      id: entity.id,
       email: entity.email,
       role: entity.role,
       isActive: entity.isActive,
