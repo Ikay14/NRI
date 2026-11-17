@@ -19,8 +19,8 @@ export abstract class AbstractPostgresRepository<TEntity extends BaseEntity>
       updatedAt: new Date(),
     });
     
-    return (await entity.save(options))
-    .toJSON() as unknown as TEntity;
+    const saved = await this.repository.save(entity, options);
+    return this.mapEntityToInterface(saved);
   }
 
   async findOne(filter: FindOptionsWhere<any>): Promise<TEntity | null> {
