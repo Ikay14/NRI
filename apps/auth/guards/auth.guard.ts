@@ -17,8 +17,9 @@ export class JwtAuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const token =
-    request.cookies?.access_token ||
-    request.headers['authorization']?.split(' ')[1];
+      request.signedCookies?.access_token ||
+      request.cookies?.access_token ||
+      request.headers['authorization']?.split(' ')[1];
 
     if (!token) throw new UnauthorizedException('Token missing or invalid');
     

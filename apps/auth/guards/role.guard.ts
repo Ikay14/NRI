@@ -18,9 +18,15 @@ export class RolesGuard implements CanActivate {
         // Assuming the user is attached to the request object
         const user = request.user;
 
-        if (!user || !user.roles || !requiredRoles.some(role => user.roles.includes(role))) {
+        const userRoles = Array.isArray(user?.role)
+            ? user.role
+            : user?.role
+                ? [user.role]
+                : [];
+
+        if (!user || userRoles.length === 0 || !requiredRoles.some(role => userRoles.includes(role))) {
             throw new ForbiddenException('You do not have permission to access this resource');
-    }
+        }
         return true;
     }
 }
